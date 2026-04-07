@@ -1,7 +1,7 @@
-// 1️⃣ Supabase client (replace with YOUR keys)
+// 1️⃣ Supabase client
 const supabase = supabase.createClient(
-  "https://wscnygnsnnqkuiyslwsy.supabase.co",  // ← Your Supabase Project URL
-  "sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy" // ← Your Supabase anon/public key
+  "https://wscnygnsnnqkuiyslwsy.supabase.co",  // Your Supabase URL
+  "sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy"  // Your anon/public key
 );
 
 // 2️⃣ Signup function
