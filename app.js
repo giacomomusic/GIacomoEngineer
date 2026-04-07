@@ -1,3 +1,16 @@
+// 1️⃣ Supabase client
+const supabase = window.supabase.createClient(
+  https://wscnygnsnnqkuiyslwsy.supabase.com,  // replace
+  wscnygnsnnqkuiyslwsy      // replace
+)
+
+// 2️⃣ Signup function
+window.signup = async function() {
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
+
+  const { data, error } = await supabase.auth.signUp({ email, password })
+
   if (error) {
     document.getElementById('message').style.color = 'red'
     document.getElementById('message').innerText = error.message
@@ -7,6 +20,7 @@
   }
 }
 
+// 3️⃣ Login function
 window.login = async function() {
   const email = document.getElementById('email').value
   const password = document.getElementById('password').value
@@ -19,3 +33,5 @@ window.login = async function() {
   } else {
     document.getElementById('message').style.color = 'green'
     document.getElementById('message').innerText = `Logged in as ${email}!`
+  }
+}
