@@ -1,19 +1,21 @@
-const supabase = window.supabase.createClient(
-  'YOUR_SUPABASE_URL',
-  'YOUR_SUPABASE_ANON_KEY'
+  if (error) {
+    document.getElementById('message').style.color = 'red'
+    document.getElementById('message').innerText = error.message
+  } else {
+    document.getElementById('message').style.color = 'green'
+    document.getElementById('message').innerText = 'Account created! Check your email to confirm.'
+  }
+}
 
-  async function login() {
+window.login = async function() {
   const email = document.getElementById('email').value
   const password = document.getElementById('password').value
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    alert(error.message)
+    document.getElementById('message').style.color = 'red'
+    document.getElementById('message').innerText = error.message
   } else {
-    alert('Logged in!')
-  }
-}
+    document.getElementById('message').style.color = 'green'
+    document.getElementById('message').innerText = `Logged in as ${email}!`
