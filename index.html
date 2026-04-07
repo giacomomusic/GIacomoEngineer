@@ -2,27 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Studio Login</title>
+  <title>Supabase Auth Demo</title>
 </head>
 <body>
-  <h1>Welcome to Your Studio</h1>
+  <h2>Sign Up / Login</h2>
 
-  <div>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-  </div>
+  <input type="email" id="email" placeholder="Email"><br><br>
+  <input type="password" id="password" placeholder="Password"><br><br>
 
-  <div>
-    <button onclick="signup()">Sign Up</button>
-    <button onclick="login()">Login</button>
-  </div>
+  <button onclick="signup()">Sign Up</button>
+  <button onclick="login()">Login</button>
 
-  <div id="message" style="margin-top:20px; color:green;"></div>
+  <p id="message"></p>
 
-  <!-- Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <!-- Your JS -->
+  <!-- Supabase client library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
