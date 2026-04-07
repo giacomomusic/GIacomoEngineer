@@ -1,7 +1,7 @@
 1️⃣ Supabase client (replace with YOUR keys)
 const supabase = window.supabase.createClient(
-  'YOUR_SUPABASE_URL',  // ← Paste your Supabase Project URL here
-  'YOUR_ANON_KEY'       // ← Paste your Supabase anon/public key here
+  https://wscnygnsnnqkuiyslwsy.supabase.com,  // ← Paste your Supabase Project URL here
+  sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy       // ← Paste your Supabase anon/public key here
 )
 
 // 2️⃣ Signup function
