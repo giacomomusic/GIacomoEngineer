@@ -13,7 +13,38 @@
   <button id="login">Log In</button>
   <p id="status"></p>
 
-  <!-- Load separate JS file as a module -->
-  <script type="module" src="app.js"></script>
+  <script type="module">
+    // Import Supabase directly from CDN
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://wscnygnsnnqkuiyslwsy.supabase.co',
+      'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+    )
+
+    const emailInput = document.getElementById('email')
+    const passwordInput = document.getElementById('password')
+    const signupBtn = document.getElementById('signup')
+    const loginBtn = document.getElementById('login')
+    const statusP = document.getElementById('status')
+
+    // Signup listener
+    signupBtn.addEventListener('click', async () => {
+      const { data, error } = await supabase.auth.signUp({
+        email: emailInput.value,
+        password: passwordInput.value
+      })
+      statusP.textContent = error ? 'Error: ' + error.message : 'Signup successful! Check your email.'
+    })
+
+    // Login listener
+    loginBtn.addEventListener('click', async () => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: emailInput.value,
+        password: passwordInput.value
+      })
+      statusP.textContent = error ? 'Error: ' + error.message : 'Login successful!'
+    })
+  </script>
 </body>
 </html>
