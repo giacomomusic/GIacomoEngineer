@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Private Portal</title>
+</head>
+<body>
+
+  <h1>Welcome to Your Client Portal</h1>
+  <p id="status"></p>
+
+  <button id="logoutBtn">Log Out</button>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://wscnygnsnnqkuiyslwsy.supabase.co',
+      'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+    )
+
+    const status = document.getElementById('status')
+
+    // CHECK SESSION
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (!session) {
+      status.textContent = "Not logged in. Redirecting..."
+      setTimeout(() => {
+        window.location.href = "login.html"
+      }, 1500)
+    } else {
+      status.textContent = "Logged in as: " + session.user.email
+    }
+
+    // LOGOUT
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut()
+      window.location.href = "login.html"
+    })
+  </script>
+
+</body>
+</html>
