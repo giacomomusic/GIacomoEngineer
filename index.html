@@ -2,20 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Supabase Auth Test</title>
+  <title>Supabase Login/Signup</title>
 </head>
 <body>
-  <h1>Signup / Login Test</h1>
+  <h1>Login / Signup</h1>
 
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
-  <br><br>
-  <button onclick="signup()">Sign Up</button>
-  <button onclick="login()">Login</button>
-  <p id="message"></p>
+  <button id="signup">Sign Up</button>
+  <button id="login">Log In</button>
+  <p id="status"></p>
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-  <script src="app.js"></script>
+  <!-- Link to the separate JS file -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
