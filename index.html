@@ -2,58 +2,122 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Supabase Login/Signup</title>
+  <title>Studio</title>
+
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input { display: block; margin: 10px 0; padding: 8px; width: 250px; }
-    button { padding: 8px 12px; margin-right: 10px; }
-    #status { margin-top: 10px; font-weight: bold; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      overflow: hidden;
+    }
+
+    /* MAIN CANVAS */
+    #studio {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* SCRAPBOOK ITEMS */
+    .item {
+      position: absolute;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: grab;
+      backdrop-filter: blur(6px);
+      transition: transform 0.2s;
+      user-select: none;
+    }
+
+    .item:hover {
+      transform: scale(1.05);
+    }
+
+    .note {
+      background: #222;
+      font-size: 14px;
+    }
+
+    .button {
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background: #ddd;
+    }
+
+    img {
+      display: block;
+      max-width: 150px;
+    }
   </style>
 </head>
+
 <body>
-  <h1>Login / Signup</h1>
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button id="signup">Sign Up</button>
-  <button id="login">Log In</button>
-  <p id="status"></p>
+<div id="studio">
 
-  <!-- Embedded JavaScript -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  <div class="item note" style="top: 20%; left: 10%;">
+    welcome to the studio
+  </div>
 
-    // Supabase keys
-    const SUPABASE_URL = 'https://wscnygnsnnqkuiyslwsy.supabase.co'
-    const SUPABASE_KEY = 'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+  <div class="item note" style="top: 50%; left: 30%;">
+    latest work coming soon
+  </div>
 
-    // Initialize Supabase
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+  <div class="item" style="top: 40%; left: 70%;">
+    <img src="https://via.placeholder.com/150">
+  </div>
 
-    // DOM elements
-    const emailInput = document.getElementById('email')
-    const passwordInput = document.getElementById('password')
-    const signupBtn = document.getElementById('signup')
-    const loginBtn = document.getElementById('login')
-    const statusP = document.getElementById('status')
+  <div class="item" style="top: 60%; left: 20%;">
+    <audio controls>
+      <source src="" type="audio/mpeg">
+    </audio>
+  </div>
 
-    // Signup listener
-    signupBtn.addEventListener('click', async () => {
-      const { error } = await supabase.auth.signUp({
-        email: emailInput.value,
-        password: passwordInput.value
-      })
-      statusP.textContent = error ? 'Error: ' + error.message : 'Signup successful! Check your email.'
+  <div class="item button" id="enterPortal" style="top: 70%; left: 60%;">
+    client portal →
+  </div>
+
+</div>
+
+<script>
+  const items = document.querySelectorAll('.item')
+
+  items.forEach(item => {
+    let isDragging = false
+    let offsetX, offsetY
+
+    item.addEventListener('mousedown', (e) => {
+      isDragging = true
+      offsetX = e.clientX - item.offsetLeft
+      offsetY = e.clientY - item.offsetTop
+      item.style.cursor = 'grabbing'
     })
 
-    // Login listener
-    loginBtn.addEventListener('click', async () => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: emailInput.value,
-        password: passwordInput.value
-      })
-      statusP.textContent = error ? 'Error: ' + error.message : 'Login successful!'
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return
+      item.style.left = (e.clientX - offsetX) + 'px'
+      item.style.top = (e.clientY - offsetY) + 'px'
     })
-  </script>
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false
+      item.style.cursor = 'grab'
+    })
+  })
+
+  // CLIENT PORTAL LINK
+  document.getElementById('enterPortal').addEventListener('click', () => {
+    window.location.href = 'login.html'
+  })
+</script>
+
 </body>
 </html>
