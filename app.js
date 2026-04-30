@@ -1,37 +1,36 @@
-// 1️⃣ Supabase client
-const supabase = supabase.createClient(
-  "https://wscnygnsnnqkuiyslwsy.supabase.co",  // Your Supabase URL
-  "sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy"  // Your anon/public key
-);
+// Import Supabase client library via CDN
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// 2️⃣ Signup function
-window.signup = async function() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+// Supabase keys
+const SUPABASE_URL = 'https://wscnygnsnnqkuiyslwsy.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
 
-  const { data, error } = await supabase.auth.signUp({ email, password });
+// Initialize Supabase client
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  if (error) {
-    document.getElementById('message').style.color = 'red';
-    document.getElementById('message').innerText = error.message;
-  } else {
-    document.getElementById('message').style.color = 'green';
-    document.getElementById('message').innerText = 'Account created! Check your email to confirm.';
-  }
-}
+// DOM elements
+const emailInput = document.getElementById('email')
+const passwordInput = document.getElementById('password')
+const signupBtn = document.getElementById('signup')
+const loginBtn = document.getElementById('login')
+const statusP = document.getElementById('status')
 
-// 3️⃣ Login function
-window.login = async function() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+// Signup button listener
+signupBtn.addEventListener('click', async () => {
+  const { data, error } = await supabase.auth.signUp({
+    email: emailInput.value,
+    password: passwordInput.value
+  })
+  if (error) statusP.textContent = 'Error: ' + error.message
+  else statusP.textContent = 'Signup successful! Check your email.'
+})
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    document.getElementById('message').style.color = 'red';
-    document.getElementById('message').innerText = error.message;
-  } else {
-    document.getElementById('message').style.color = 'green';
-    document.getElementById('message').innerText = `Logged in as ${email}!`;
-  }
-}
+// Login button listener
+loginBtn.addEventListener('click', async () => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: emailInput.value,
+    password: passwordInput.value
+  })
+  if (error) statusP.textContent = 'Error: ' + error.message
+  else statusP.textContent = 'Login successful!'
+})
