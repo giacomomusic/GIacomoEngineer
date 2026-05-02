@@ -6,39 +6,73 @@
 </head>
 <body>
 
-  <h1>Welcome to Your Client Portal</h1>
-  <p id="status"></p>
+<h1>Client Dashboard</h1>
 
-  <button id="logoutBtn">Log Out</button>
+<p id="status"></p>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+<h3>Projects</h3>
+<input id="projectName" placeholder="new project">
+<button id="add">Add</button>
 
-    const supabase = createClient(
-      'https://wscnygnsnnqkuiyslwsy.supabase.co',
-      'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
-    )
+<ul id="list"></ul>
 
-    const status = document.getElementById('status')
+<br>
+<button id="logout">Logout</button>
 
-    // CHECK SESSION
-    const { data: { session } } = await supabase.auth.getSession()
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    if (!session) {
-      status.textContent = "Not logged in. Redirecting..."
-      setTimeout(() => {
-        window.location.href = "login.html"
-      }, 1500)
-    } else {
-      status.textContent = "Logged in as: " + session.user.email
-    }
+const supabase = createClient(
+  'https://wscnygnsnnqkuiyslwsy.supabase.co',
+  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+)
 
-    // LOGOUT
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await supabase.auth.signOut()
-      window.location.href = "login.html"
-    })
-  </script>
+// AUTH CHECK
+const { data: { session } } = await supabase.auth.getSession()
+
+if (!session) {
+  window.location.href = "login.html"
+}
+
+document.getElementById('status').textContent =
+  "Logged in as: " + session.user.email
+
+// ADD PROJECT
+document.getElementById('add').onclick = async () => {
+  const name = document.getElementById('projectName').value
+
+  await supabase.from('projects').insert({
+    user_id: session.user.id,
+    name
+  })
+
+  load()
+}
+
+// LOAD PROJECTS
+async function load() {
+  const { data } = await supabase
+    .from('projects')
+    .select('*')
+
+  const list = document.getElementById('list')
+  list.innerHTML = ""
+
+  data.forEach(p => {
+    const li = document.createElement('li')
+    li.textContent = p.name
+    list.appendChild(li)
+  })
+}
+
+load()
+
+// LOGOUT
+document.getElementById('logout').onclick = async () => {
+  await supabase.auth.signOut()
+  window.location.href = "login.html"
+}
+</script>
 
 </body>
 </html>
