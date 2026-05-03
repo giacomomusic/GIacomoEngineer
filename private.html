@@ -2,76 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Private Portal</title>
+  <title>Client Portal</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .project {
+      background: #1e1e1e;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+
+    img {
+      max-width: 200px;
+      display: block;
+      margin-top: 10px;
+    }
+
+    audio {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
 </head>
+
 <body>
 
-<h1>Client Dashboard</h1>
+<h1>Your Projects</h1>
 
-<p id="status"></p>
+<div id="projects"></div>
 
-<h3>Projects</h3>
-<input id="projectName" placeholder="new project">
-<button id="add">Add</button>
-
-<ul id="list"></ul>
-
-<br>
-<button id="logout">Logout</button>
+<button id="logout">Log Out</button>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const supabase = createClient(
-  'https://wscnygnsnnqkuiyslwsy.supabase.co',
-  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
-)
+  const supabase = createClient(
+    'https://wscnygnsnnqkuiyslwsy.supabase.co',
+    'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+  )
 
-// AUTH CHECK
-const { data: { session } } = await supabase.auth.getSession()
+  const container = document.getElementById('projects')
 
-if (!session) {
-  window.location.href = "login.html"
-}
+  // CHECK USER
+  const { data: { user } } = await supabase.auth.getUser()
 
-document.getElementById('status').textContent =
-  "Logged in as: " + session.user.email
+  if (!user) {
+    window.location.href = "login.html"
+  }
 
-// ADD PROJECT
-document.getElementById('add').onclick = async () => {
-  const name = document.getElementById('projectName').value
-
-  await supabase.from('projects').insert({
-    user_id: session.user.id,
-    name
-  })
-
-  load()
-}
-
-// LOAD PROJECTS
-async function load() {
-  const { data } = await supabase
+  // FETCH PROJECTS
+  const { data, error } = await supabase
     .from('projects')
     .select('*')
 
-  const list = document.getElementById('list')
-  list.innerHTML = ""
+  if (error) {
+    container.innerHTML = "Error loading projects"
+    console.error(error)
+  } else {
+    if (data.length === 0) {
+      container.innerHTML = "No projects yet"
+    }
 
-  data.forEach(p => {
-    const li = document.createElement('li')
-    li.textContent = p.name
-    list.appendChild(li)
+    data.forEach(project => {
+      const div = document.createElement('div')
+      div.className = 'project'
+
+      div.innerHTML = `
+        <h3>${project.title || "Untitled Project"}</h3>
+        <p>${project.description || ""}</p>
+
+        ${project.image_url ? `<img src="${project.image_url}">` : ""}
+        ${project.audio_url ? `
+          <audio controls>
+            <source src="${project.audio_url}" type="audio/mpeg">
+          </audio>
+        ` : ""}
+      `
+
+      container.appendChild(div)
+    })
+  }
+
+  // LOGOUT
+  document.getElementById('logout').addEventListener('click', async () => {
+    await supabase.auth.signOut()
+    window.location.href = "login.html"
   })
-}
 
-load()
-
-// LOGOUT
-document.getElementById('logout').onclick = async () => {
-  await supabase.auth.signOut()
-  window.location.href = "login.html"
-}
 </script>
 
 </body>
