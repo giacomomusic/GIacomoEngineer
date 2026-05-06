@@ -1,1 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      display: block;
+      margin: 12px 0;
+      padding: 12px;
+      width: 320px;
+      border: none;
+      border-radius: 6px;
+    }
+
+    input, select {
+      background: #222;
+      color: white;
+    }
+
+    button {
+      background: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ddd;
+    }
+
+    #message {
+      margin-top: 15px;
+    }
+
+    .success { color: lime; }
+    .error { color: red; }
+  </style>
+</head>
+
+<body>
+
+<h1>Admin Panel</h1>
+
+<input id="projectName" placeholder="Project Name">
+
+<!-- 🔥 PUT YOUR USERS HERE -->
+<select id="userSelect">
+  <option value="">Select Client</option>
+
+  <!-- REPLACE THESE WITH REAL USERS -->
+  <option value="PASTE-USER-ID-HERE">client1@email.com</option>
+  <option value="PASTE-USER-ID-HERE">client2@email.com</option>
+
+</select>
+
+<button id="createBtn">Create Project</button>
+
+<p id="message"></p>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  'https://wscnygnsnnqkuiyslwsy.supabase.co',
+  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+)
+
+const message = document.getElementById('message')
+
+document.getElementById('createBtn').onclick = async () => {
+  const name = document.getElementById('projectName').value
+  const user_id = document.getElementById('userSelect').value
+
+  if (!name || !user_id) {
+    message.textContent = "Fill everything out"
+    message.className = "error"
+    return
+  }
+
+  const { error } = await supabase.from('projects').insert({
+    name,
+    user_id
+  })
+
+  if (error) {
+    message.textContent = error.message
+    message.className = "error"
+  } else {
+    message.textContent = "Project created"
+    message.className = "success"
+  }
+}
+</script>
+
+</body>
+</html>
