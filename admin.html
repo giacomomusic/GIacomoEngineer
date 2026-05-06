@@ -6,23 +6,21 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: #111;
       color: white;
       padding: 30px;
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
+    h1 { margin-bottom: 20px; }
 
     input, select, button {
       display: block;
-      margin: 12px 0;
+      margin: 10px 0;
       padding: 12px;
       width: 320px;
-      border: none;
       border-radius: 6px;
+      border: none;
     }
 
     input, select {
@@ -37,12 +35,10 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #ddd;
-    }
+    button:hover { background: #ddd; }
 
-    #message {
-      margin-top: 15px;
+    #msg {
+      margin-top: 10px;
     }
 
     .success { color: lime; }
@@ -56,19 +52,18 @@
 
 <input id="projectName" placeholder="Project Name">
 
-<!-- 🔥 PUT YOUR USERS HERE -->
 <select id="userSelect">
   <option value="">Select Client</option>
 
-  <!-- REPLACE THESE WITH REAL USERS -->
-  <option value="d49787f6-1f72-4095-892c-9dce376147f5">gmessina@berklee.edu</option>
-  <option value="PASTE-USER-ID-HERE">client2@email.com</option>
-
+  <!-- replace with real users -->
+  <option value="PASTE_USER_ID">client@email.com</option>
 </select>
 
-<button id="createBtn">Create Project</button>
+<input type="file" id="fileInput" multiple>
 
-<p id="message"></p>
+<button id="createBtn">Create Project + Upload</button>
+
+<p id="msg"></p>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
@@ -78,31 +73,51 @@ const supabase = createClient(
   'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
 )
 
-const message = document.getElementById('message')
+const msg = document.getElementById('msg')
+
+async function uploadFile(file, projectId) {
+  const filePath = `${projectId}/${file.name}`
+
+  const { error } = await supabase.storage
+    .from('project-files')
+    .upload(filePath, file)
+
+  if (error) console.log(error)
+}
 
 document.getElementById('createBtn').onclick = async () => {
   const name = document.getElementById('projectName').value
   const user_id = document.getElementById('userSelect').value
+  const files = document.getElementById('fileInput').files
 
   if (!name || !user_id) {
-    message.textContent = "Fill everything out"
-    message.className = "error"
+    msg.textContent = "Fill all required fields"
+    msg.className = "error"
     return
   }
 
-  const { error } = await supabase.from('projects').insert({
-  name: projectName,
-  user_id
-})
-  })
+  // 1. create project
+  const { data, error } = await supabase
+    .from('projects')
+    .insert({ name, user_id })
+    .select()
+    .single()
 
   if (error) {
-    message.textContent = error.message
-    message.className = "error"
-  } else {
-    message.textContent = "Project created"
-    message.className = "success"
+    msg.textContent = error.message
+    msg.className = "error"
+    return
   }
+
+  const projectId = data.id
+
+  // 2. upload files
+  for (let file of files) {
+    await uploadFile(file, projectId)
+  }
+
+  msg.textContent = "Project + files uploaded"
+  msg.className = "success"
 }
 </script>
 
