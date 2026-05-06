@@ -7,39 +7,39 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
+      font-family: Arial;
+      background: #0f0f0f;
       color: white;
-      padding: 20px;
+      padding: 30px;
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     .project {
-      background: #1e1e1e;
+      background: #1c1c1c;
       padding: 15px;
       margin-bottom: 15px;
       border-radius: 10px;
     }
 
-    img {
-      max-width: 200px;
+    a {
+      color: #7ab7ff;
+      text-decoration: none;
       display: block;
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
-    audio {
-      margin-top: 10px;
-      width: 100%;
+    a:hover {
+      text-decoration: underline;
     }
 
     button {
       margin-top: 20px;
-      padding: 10px 15px;
-      background: white;
+      padding: 10px 14px;
       border: none;
+      background: white;
       cursor: pointer;
       font-weight: bold;
     }
@@ -55,61 +55,47 @@
 <button id="logout">Log Out</button>
 
 <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  const supabase = createClient(
-    'https://wscnygnsnnqkuiyslwsy.supabase.co',
-    'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
-  )
+const supabase = createClient(
+  'https://wscnygnsnnqkuiyslwsy.supabase.co',
+  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+)
 
-  const container = document.getElementById('projects')
+const container = document.getElementById('projects')
 
-  // CHECK USER
-  const { data: { user } } = await supabase.auth.getUser()
+// auth check
+const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    window.location.href = "login.html"
-  }
+if (!user) {
+  window.location.href = "login.html"
+}
 
-  // FETCH PROJECTS
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
+// get projects
+const { data } = await supabase
+  .from('projects')
+  .select('*')
+  .eq('user_id', user.id)
 
-  if (error) {
-    container.innerHTML = "Error loading projects"
-    console.error(error)
-  } else {
-    if (data.length === 0) {
-      container.innerHTML = "No projects yet"
-    }
+data.forEach(p => {
+  const div = document.createElement('div')
+  div.className = 'project'
 
-    data.forEach(project => {
-      const div = document.createElement('div')
-      div.className = 'project'
+  div.innerHTML = `
+    <h3>${p.name}</h3>
+    <a href="https://wscnygnsnnqkuiyslwsy.supabase.co/storage/v1/object/public/project-files/${p.id}/" target="_blank">
+      Open Project Files
+    </a>
+  `
 
-      div.innerHTML = `
-        <h3>${project.name || "Untitled Project"}</h3>
-        <p>${project.description || ""}</p>
+  container.appendChild(div)
+})
 
-        ${project.image_url ? `<img src="${project.image_url}">` : ""}
-        ${project.audio_url ? `
-          <audio controls>
-            <source src="${project.audio_url}" type="audio/mpeg">
-          </audio>
-        ` : ""}
-      `
-
-      container.appendChild(div)
-    })
-  }
-
-  // LOGOUT
-  document.getElementById('logout').addEventListener('click', async () => {
-    await supabase.auth.signOut()
-    window.location.href = "login.html"
-  })
-
+// logout
+document.getElementById('logout').onclick = async () => {
+  await supabase.auth.signOut()
+  window.location.href = "login.html"
+}
 </script>
 
 </body>
