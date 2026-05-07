@@ -2,43 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Private Portal</title>
-</head>
-<body>
+  <title>Client Portal</title>
 
-  <h1>Welcome to Your Client Portal</h1>
-  <p id="status"></p>
-
-  <button id="logoutBtn">Log Out</button>
-
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-    const supabase = createClient(
-      'https://wscnygnsnnqkuiyslwsy.supabase.co',
-      'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
-    )
-
-    const status = document.getElementById('status')
-
-    // CHECK SESSION
-    const { data: { session } } = await supabase.auth.getSession()
-
-    if (!session) {
-      status.textContent = "Not logged in. Redirecting..."
-      setTimeout(() => {
-        window.location.href = "login.html"
-      }, 1500)
-    } else {
-      status.textContent = "Logged in as: " + session.user.email
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0f0f0f;
+      color: white;
+      padding: 30px;
     }
 
-    // LOGOUT
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await supabase.auth.signOut()
-      window.location.href = "login.html"
-    })
-  </script>
+    h1 {
+      margin-bottom: 25px;
+    }
+
+    .project {
+      background: #1c1c1c;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
+
+    a {
+      color: #7ab7ff;
+      text-decoration: none;
+      display: block;
+      margin-top: 8px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 14px;
+      border: none;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Your Projects</h1>
+
+<div id="projects"></div>
+
+<button id="logout">Log Out</button>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  'https://wscnygnsnnqkuiyslwsy.supabase.co',
+  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+)
+
+const container = document.getElementById('projects')
+
+// auth check
+const { data: { user } } = await supabase.auth.getUser()
+
+if (!user) {
+  window.location.href = "login.html"
+}
+
+// get projects
+const { data } = await supabase
+  .from('projects')
+  .select('*')
+  .eq('user_id', user.id)
+
+data.forEach(p => {
+  const div = document.createElement('div')
+  div.className = 'project'
+
+  div.innerHTML = `
+    <h3>${p.name}</h3>
+    <a href="https://wscnygnsnnqkuiyslwsy.supabase.co/storage/v1/object/public/project-files/${p.id}/" target="_blank">
+      Open Project Files
+    </a>
+  `
+
+  container.appendChild(div)
+})
+
+// logout
+document.getElementById('logout').onclick = async () => {
+  await supabase.auth.signOut()
+  window.location.href = "login.html"
+}
+</script>
 
 </body>
 </html>

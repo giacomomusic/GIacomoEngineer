@@ -2,60 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login / Signup</title>
+  <title>Login</title>
 </head>
 <body>
 
-  <h1>Client Portal Access</h1>
+<h1>Client Portal</h1>
 
-  <input type="email" id="email" placeholder="Email"><br><br>
-  <input type="password" id="password" placeholder="Password"><br><br>
+<input id="email" type="email" placeholder="email"><br><br>
+<input id="password" type="password" placeholder="password"><br><br>
 
-  <button id="signupBtn">Sign Up</button>
-  <button id="loginBtn">Log In</button>
+<button id="signupBtn">Sign Up</button>
+<button id="loginBtn">Login</button>
 
-  <p id="message"></p>
+<p id="msg"></p>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const supabase = createClient(
-      'https://wscnygnsnnqkuiyslwsy.supabase.co',
-      'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
-    )
+const supabase = createClient(
+  'https://wscnygnsnnqkuiyslwsy.supabase.co',
+  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+)
 
-    const emailInput = document.getElementById('email')
-    const passwordInput = document.getElementById('password')
-    const message = document.getElementById('message')
+const email = document.getElementById('email')
+const password = document.getElementById('password')
+const msg = document.getElementById('msg')
 
-    // SIGN UP
-    document.getElementById('signupBtn').addEventListener('click', async () => {
-      const { error } = await supabase.auth.signUp({
-        email: emailInput.value,
-        password: passwordInput.value
-      })
+// SIGN UP
+document.getElementById('signupBtn').onclick = async () => {
+  const { error } = await supabase.auth.signUp({
+    email: email.value,
+    password: password.value
+  })
 
-      if (error) {
-        message.textContent = error.message
-      } else {
-        message.textContent = "Check your email to confirm signup!"
-      }
-    })
+  msg.textContent = error ? error.message : "Check your email"
+}
 
-    // LOGIN
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: emailInput.value,
-        password: passwordInput.value
-      })
+// LOGIN
+document.getElementById('loginBtn').onclick = async () => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value
+  })
 
-      if (error) {
-        message.textContent = error.message
-      } else {
-        window.location.href = "private.html"
-      }
-    })
-  </script>
+  if (error) msg.textContent = error.message
+  else window.location.href = "private.html"
+}
+</script>
 
 </body>
 </html>

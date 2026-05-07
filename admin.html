@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      padding: 30px;
+    }
+
+    h1 { margin-bottom: 20px; }
+
+    input, select, button {
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      width: 320px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    input, select {
+      background: #222;
+      color: white;
+    }
+
+    button {
+      background: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #ddd; }
+
+    #msg {
+      margin-top: 10px;
+    }
+
+    .success { color: lime; }
+    .error { color: red; }
+  </style>
+</head>
+
+<body>
+
+<h1>Admin Panel</h1>
+
+<input id="projectName" placeholder="Project Name">
+
+<select id="userSelect">
+  <option value="">Select Client</option>
+
+  <!-- replace with real users -->
+  <option value="PASTE_USER_ID">client@email.com</option>
+</select>
+
+<input type="file" id="fileInput" multiple>
+
+<button id="createBtn">Create Project + Upload</button>
+
+<p id="msg"></p>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  'https://wscnygnsnnqkuiyslwsy.supabase.co',
+  'sb_publishable_dQIDUqGO778PAoIlz4fvNA_l-6M8NSy'
+)
+
+const msg = document.getElementById('msg')
+
+async function uploadFile(file, projectId) {
+  const filePath = `${projectId}/${file.name}`
+
+  const { error } = await supabase.storage
+    .from('project-files')
+    .upload(filePath, file)
+
+  if (error) console.log(error)
+}
+
+document.getElementById('createBtn').onclick = async () => {
+  const name = document.getElementById('projectName').value
+  const user_id = document.getElementById('userSelect').value
+  const files = document.getElementById('fileInput').files
+
+  if (!name || !user_id) {
+    msg.textContent = "Fill all required fields"
+    msg.className = "error"
+    return
+  }
+
+  // 1. create project
+  const { data, error } = await supabase
+    .from('projects')
+    .insert({ name, user_id })
+    .select()
+    .single()
+
+  if (error) {
+    msg.textContent = error.message
+    msg.className = "error"
+    return
+  }
+
+  const projectId = data.id
+
+  // 2. upload files
+  for (let file of files) {
+    await uploadFile(file, projectId)
+  }
+
+  msg.textContent = "Project + files uploaded"
+  msg.className = "success"
+}
+</script>
+
+</body>
+</html>
