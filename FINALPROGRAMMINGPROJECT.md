@@ -23,7 +23,7 @@ It would take years for me to take all of these screenshots and insert them, I'm
 
 ## Link to Sites
 
-[MainSite](https://giacomomusic.github.io/GIacomoEngineer/Main)
+[MainSite](https://giacomomusic.github.io/GIacomoEngineer/index.html)
 [Login Site](https://giacomomusic.github.io/GIacomoEngineer/login.html)
 [Admin Site](https://giacomomusic.github.io/GIacomoEngineer/admin.html)
 
